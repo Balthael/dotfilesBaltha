@@ -355,7 +355,7 @@ install_aur_dependencies() {
 clone_dotfiles() {
     clear
     logo "Downloading dotfiles"
-    repo_url="https://github.com/gh0stzk/dotfiles"
+    repo_url="https://github.com/Balthael/dotfilesBaltha"
     repo_dir="$HOME/.local/share/gh0stzk"
     timestamp=$(date +"%Y%m%d-%H%M%S")
     sleep 2
