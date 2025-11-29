@@ -4,11 +4,12 @@
 #  ╚════██║ ██╔██╗ ██╔══██║██╔═██╗ ██║  ██║██╔══██╗██║
 #  ███████║██╔╝ ██╗██║  ██║██║  ██╗██████╔╝██║  ██║╚██████╗
 #  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝
-#	gh0stzk		https://github.com/gh0stzk/dotfiles
+#	z0mbi3			https://github.com/gh0stzk/dotfiles1
+#
 
 # Show help
 alt + F1
-    OpenApps --KeyHelp
+	OpenApps --KeyHelp
 
 ############################
 # ----- Applications ----- #
@@ -16,31 +17,33 @@ alt + F1
 
 # ----- Main Apps ----- #
 
-# Open Terminal (Normal & Floating)
-super + {_,alt + }Return
-    OpenApps --{terminal,floating}
+
 
 # App launcher
 super + @space
-    OpenApps --menu
+	OpenApps --menu
 
 # Theme Selector
 alt + @space
-    RiceSelector
+	RiceSelector
 
 # ----- Your Apps ----- #
 
 # Apps (browser, editor, filemanager)
-super + {b,e,f}
-    OpenApps --{browser,editor,filemanager}
+#super + {b,e,f}
+#	OpenApps --{browser,editor,filemanager}
 
 # Terminal apps (yazi, nvim, ncmpcpp)
-super + {y,v,m}
-    OpenApps --{yazi,nvim,music}
+super + shift {y,v,m}
+	OpenApps --{yazi,nvim,spotify}
+
+Media apps (Pavucontrol, Whatsapp)
+super + {p,w}
+OpenApps --{soundcontrol,whats}
 
 # Media apps (Pavucontrol, Telegram, Whatsapp)
-super + {p,t,w}
-    OpenApps --{soundcontrol,telegram,whats}
+#super + {p,t,w}
+#	OpenApps --{soundcontrol,telegram,whats}
 
 # Rice Editor App
 super + r
@@ -50,35 +53,35 @@ super + r
 
 #Terminal Selector
 super + alt + t
-    Term --selecterm
+	Term --selecterm
 
 # Wallpaper selector
 super + alt + w
-    WallSelect
+	WallSelect
 
 # Mount Android phones
 super + alt + a
-    OpenApps --android
+	OpenApps --android
 
 # Network Manager
 super + alt + n
-    OpenApps --netmanager
+	OpenApps --netmanager
 
 # Bluetooth
 super + alt + b
-    OpenApps --bluetooth
+	OpenApps --bluetooth
 
 # Clipboard
 super + alt + c
-    OpenApps --clipboard
+	OpenApps --clipboard
 
 # Screenshot
 super + alt + s
-    OpenApps --screenshot
+	OpenApps --screenshot
 
 # PowerMenu
 super + alt + p
-    OpenApps --powermenu
+	OpenApps --powermenu
 
 # Rofi style
 super + alt + l
@@ -86,167 +89,191 @@ super + alt + l
 
 # Keyboard Layout Applet
 super + alt + k
-    OpenApps --keyboard
-
-# RofiPass applet
-super + alt + x
-    OpenApps --pass
+	OpenApps --keyboard
 
 # ----- Environment Apps ----- #
 
 # Scratchpad
 super + alt + o
-    OpenApps --scratch
+	OpenApps --scratch
 
 # jgmenu
 ~button3
-    win=$(xdotool getmouselocation --shell | sed -n 's/^WINDOW=\(.*\)/\1/p'); \
-    type=$(xprop -id "$win" _NET_WM_WINDOW_TYPE 2>/dev/null); \
-    case "$type" in *DESKTOP*) \
-        jgmenu --csv-file="$HOME/.config/bspwm/config/jgmenu.txt" \
-               --config-file="$HOME/.config/bspwm/config/jgmenurc";; esac
+  xqp 0 $(xdo id -N Bspwm -n root) && jgmenu --csv-file=~/.config/bspwm/src/config/jgmenu.txt --config-file=~/.config/bspwm/src/config/jgmenurc
 
 # Power off, Reboot, Log out, Lockscreen, kill an app
 ctrl + super + alt + {p,r,q,l,k,s}
-    {systemctl poweroff, systemctl reboot,bspc quit,ScreenLocker,xkill,SoftReload}
+	{systemctl poweroff, systemctl reboot,bspc quit,ScreenLocker,xkill,SoftReload}
 
 # Hide/Show Bar (Polybar and/or eww)
 super + alt + {h,u}
-    HideBar {-h,-u}
+	HideBar {-h,-u}
 
 # Change transparency on focused window
 ctrl + alt + {plus,minus,t}
-    picom-trans {-c -3,-c +3,-c -d}
+	picom-trans {-c -3,-c +3,-c -d}
 
 # Manage brightness
 XF86MonBrightness{Up,Down}
-    sh Brightness {up,down}
+	sh Brightness {up,down}
 
 # Volume control
 XF86Audio{RaiseVolume,LowerVolume,Mute}
-    Volume{ --inc, --dec, --toggle}
+	Volume{ --inc, --dec, --toggle}
 
 # Music Control
 XF86Audio{Next,Prev,Play,Stop}
-    MediaControl {--next,--previous,--toggle,--stop}
+	MediaControl {--next,--previous,--toggle,--stop}
 
 #####################
 # ----- Bspwm ----- #
 #####################
 
-# Reload BSPWM
-super + alt + r
-    bspc wm -r
+#
+# wm independent hotkeys
+#
 
-# Close/Kill node
-super + {_,shift + }x
-    bspc node -{c,k}
+# terminal emulator
+super + Return
+	/usr/bin/kitty
 
-# Reload sxhkd Keybinds
+# program launcher
+super + d
+	/usr/bin/rofi -show drun
+
+# make sxhkd reload its configuration files:
 super + Escape
-    pkill -USR1 -x sxhkd; dunstify -u low -i ~/.config/bspwm/config/assets/reload.svg 'sxhkd' 'The configuration file has been reloaded successfully!'
+	pkill -USR1 -x sxhkd
 
-# ----- Node states and flags ----- #
+#
+# bspwm hotkeys
+#
 
-# Set the node state
-alt + {t,shift + t,a,f}
-    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+# quit/restart bspwm
+super + shift + {q,r}
+	bspc {quit,wm -r}
 
-# Set the node flags
-alt + {m,x,s,p}
-    bspc node -g {marked,locked,sticky,private}
+# close and kill
+super + {_,shift + }q
+	bspc node -{c,k}
 
-# Hide window
-alt + h
-    HideNode --hide
+# alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
 
-# Show menu to restore hidden windows
-ctrl + alt + h
-    HideNode --menu
+# send the newest marked node to the newest preselected node
+super + y
+	bspc node newest.marked.local -n newest.!automatic.local
 
-# ----- Focus/Swap Nodes ----- #
+# swap the current node and the biggest window
+super + g
+	bspc node -s biggest.window
 
-# Rotate desktop
-ctrl + Tab
-    bspc node @/ --rotate {90,-90}
+#
+# state/flags
+#
 
-# Switch workspace
-super + {Left,Right}
-    bspc desktop -f {prev,next}
+# set the window state
+super + {t,shift + t,s,f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-# Focus or send to the given desktop
-super + {_,ctrl + }{1-9,0}
-    bspc {desktop -f,node -d} '^{1-9,10}'
+# set the node flags
+super + ctrl + {m,x,y,z}
+	bspc node -g {marked,locked,sticky,private}
 
-# Send focused Node to workspace directionally
-super + ctrl + {Left,Right}
-    bspc node -d {prev,next} '--follow'
+#
+# focus/swap
+#
 
-# Node switcher
-alt + Tab
-    rofi \
-        -theme $HOME/.config/bspwm/config/rofi-themes/Windows.rasi \
-        -show window -window-thumbnail \
-        -window-hide-active-window true \
-        -kb-accept-entry "!Alt-Tab,Return" \
-        -kb-element-next "Alt-Tab"
+# focus the node in the given direction
+super + {_,shift + }{Left,Down,Up,Right}
+	bspc node -{f,s} {west,south,north,east}
 
-# Focus the node in the given direction
-super + alt + {Left,Down,Up,Right}
-    { DIR=west FALLBACK=prev; , DIR=south; , DIR=north; , DIR=east FALLBACK=next; } \
-    bspc node -f $DIR.!sticky.!hidden.local || bspc node -f $FALLBACK.leaf.!sticky.!hidden.local
+# focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
 
-# Swap Nodes
-ctrl + alt + {Left,Down,Up,Right}
-    bspc node -s {west,south,north,east}.local
+# focus the next/previous window in the current desktop
+super + {_,shift + }c
+	bspc node -f {next,prev}.local.!hidden.window
 
-# Focus the last node/desktop
-ctrl + shift {comma,period}
-    bspc {node,desktop} -f last
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
 
-# Preselect the direction (horizontal, vertical or cancel)
-super + ctrl {h,v,q}
-    bspc node -p {east,south,cancel}
+# focus the last node/desktop
+super + {grave,Tab}
+	bspc {node,desktop} -f last
 
-# ----- Move/Resize Nodes ----- #
+# focus the older or newer node in the focus history
+super + {o,i}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on
 
-# balance desktop's nodes
-super + ctrl + b
-  bspc node @/ -B
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
 
-# increase/decrease Node
-super + alt + {plus,minus}
-    { \
-       bspc node -z top_right 20 -20 ; bspc node -z bottom_left -20 20; \
-    ,  bspc node -z top_right -20 20 ; bspc node -z bottom_left 20 -20; \
-    }
+#
+# preselect
+#
 
-# increase/decrease FLOATING node size (zoom in/out)
-super + ctrl + {plus,minus}
-    { \
-	xdotool getactivewindow windowmove --relative -- -50 -25 ; xdo resize -w +100 -h +50; \
-	, xdotool getactivewindow windowmove --relative -- +50 +25 ; xdo resize -w -100 -h -50; \
-    }
+# preselect the direction
+super + ctrl + alt + {Left,Down,Up,Right}
+	bspc node -p {west,south,north,east}
 
-# Move floating window
+# preselect the ratio
+super + ctrl + {1-9}
+	bspc node -o 0.{1-9}
+
+# cancel the preselection for the focused node
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + alt + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# move/resize
+#
+
+# expand a window by moving one of its side outward
+#super + alt + {h,j,k,l}
+#	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# contract a window by moving one of its side inward
+#super + alt + shift + {h,j,k,l}
+#	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# move a floating window
 super + shift + {Left,Down,Up,Right}
-    bspc node -v {-20 0,0 20,0 -20,20 0}
+	bspc node -v {-20 0,0 20,0 -20,20 0}
 
-# ----- Multi operation functions ----- #
+# Custom Resize
+alt + super + {Left,Down,Up,Right}
+	$HOME/.config/bspwm/scripts/bspwm_resize {west,south,north,east}
 
-# Close all nodes in current desktop
-super + ctrl + x
-    bspc query -N -d | xargs -I id -n 1 bspc node id -c
+# Google
+super + shift + g
+	/sbin/google-chrome-stable &> /dev/null & disown
 
-# Close/Kill all unfocused local windows
-super + n ; {x,k}
-    bspc query -N -n '.!focused.!marked.local.window' | xargs -I id -n 1 bspc node id {-c,-k}
 
-# Bring all marked windows to the focused desktop
-super + n ; m
-    bspc query -N -n '.marked' | xargs -I id -n 1 bspc node id -d focused --follow
+# Firefox
+super + shift + f
+  /usr/bin/firefox &> /dev/null & disown
 
-# Bring everything from desktop X to the current desktop
-# Example usage: super + n followed by 5 (brings everything from desktop 5)
-super + n ; {1-9}
-    bspc query -N -d {1-9} -n '.window' | xargs -I id -n 1 bspc node id -d focused
+# Flameshop
+super + shift + s
+  /usr/bin/flameshot gui
+
+# Thunar
+super + shift + e
+  /sbin/thunar &> /dev/null & disown
+
+
+# i3lock-fancy
+super + shift + x
+  /sbin/i3lock-fancy -t "Tu Password Balthael" -f /usr/local/share/fonts/HackNerdFont-Regular.ttf
+
