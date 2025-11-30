@@ -1,0 +1,14 @@
+.DS_Store*
+._*
+.Spotlight-V100
+.Trashes
+Gemfile.lock
+ehthumbs.db
+Thumbs.db
+desktop.ini
+.dropbox*
+.idea
+vendor/
+.bundle/
+.vscode/
+*.gem

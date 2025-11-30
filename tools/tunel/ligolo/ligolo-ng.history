@@ -1,0 +1,18 @@
+interface_create --name ligolo
+session
+start
+session
+start
+session
+start
+interface_create --name ligolo
+exit
+session
+start
+route_add --name ligolo --route 127.0.0.1/32
+session
+start
+route_add --name ligolo --route 127.0.0.1/32
+interface_create --name ligolo
+route_add --name ligolo --route 127.0.0.1/32
+route_add --name ligolo --route 240.0.0.1/32

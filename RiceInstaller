@@ -589,4 +589,234 @@ backup_existing_config
 install_dotfiles
 configure_services
 change_default_shell
+# ────────────────────────────────────────────────────────────────────
+# Copiamos toda la carpeta “tools” a $HOME/tools (creándola si no existe)
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Copiando carpeta tools → \$HOME/tools (si no existe)" 
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# Nos aseguramos de estar en la raíz del repositorio (donde existe la carpeta “tools”)
+REPO_ROOT="$HOME/dotfiles"
+
+# 1) Creamos ~/tools si no existe
+mkdir -p "$HOME/tools"
+
+# 2) Copiamos recursivamente todo el contenido interno de “tools/” a “$HOME/tools/”
+cp -r "$REPO_ROOT/tools/." "$HOME/tools/"
+
+# 3) Verificamos error de copia
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo copiar $REPO_ROOT/tools → $HOME/tools."
+    exit 1
+fi
+
+echo "✅ Carpeta tools copiada correctamente en \$HOME/tools"
+echo ""
+
+
+# ────────────────────────────────────────────────────────────────────
+# Ahora clonamos Powerlevel10k para usuario NO privilegiado y para root
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Clonando Powerlevel10k para usuario normal y para root"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# 1. Clonar para el usuario no privilegiado (en $HOME/powerlevel10k)
+echo "Configurando Powerlevel10k en \$HOME/powerlevel10k…"
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/powerlevel10k"
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo clonar Powerlevel10k en \$HOME/powerlevel10k."
+    exit 1
+fi
+echo "✔ Powerlevel10k clonado en \$HOME/powerlevel10k."
+
+# 2. Clonar para root (en /root/powerlevel10k)
+#    Usamos sudo para que se ejecute como root, ya que el script corre como usuario normal.
+echo "Configurando Powerlevel10k en /root/powerlevel10k…"
+sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo clonar Powerlevel10k en /root/powerlevel10k."
+    exit 1
+fi
+echo "✔ Powerlevel10k clonado en /root/powerlevel10k."
+
+echo ""
+
+# ────────────────────────────────────────────────────────────────────
+#  Copiar el archivo .p10k.zsh al usuario y a root
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Copiando .p10k.zsh a \$HOME/.p10k.zsh y a /root/.p10k.zsh"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# 3) Copiar .p10k.zsh a $HOME
+if [ -f "$HOME/dotfiles/home/.p10k.zsh" ]; then
+    cp "$HOME/dotfiles/home/.p10k.zsh" "$HOME/.p10k.zsh"
+    if [ $? -ne 0 ]; then
+        echo "ERROR: No se pudo copiar \$HOME/dotfiles/home/.p10k.zsh → \$HOME/.p10k.zsh"
+        exit 1
+    fi
+    echo "✔ Archivo .p10k.zsh instalado en \$HOME/.p10k.zsh"
+else
+    echo "WARN: No se encontró \$HOME/dotfiles/home/.p10k.zsh (se omitió copia a \$HOME)"
+fi
+
+# 4) Copiar .p10k.zsh a /root (usando sudo)
+if [ -f "$HOME/dotfiles/home/.p10k.zsh" ]; then
+    sudo cp "$HOME/dotfiles/home/.p10k.zsh" /root/.p10k.zsh
+    if [ $? -ne 0 ]; then
+        echo "ERROR: No se pudo copiar \$HOME/dotfiles/home/.p10k.zsh → /root/.p10k.zsh"
+        exit 1
+    fi
+    echo "✔ Archivo .p10k.zsh instalado en /root/.p10k.zsh"
+else
+    echo "WARN: No se encontró \$HOME/dotfiles/home/.p10k.zsh (se omitió copia a /root)"
+fi
+
+echo ""
+
+
+# ────────────────────────────────────────────────────────────────────
+#  Copiar el archivo .zshrc de root desde el repositorio a /root
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Copiando el archivo .zshrc de root desde el repo…"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+
+origen_zshrc_root="$HOME/dotfiles/home/.zshrc"
+
+# Verificamos que exista el archivo en la ruta de origen
+if [ -f "$origen_zshrc_root" ]; then
+    # Copiamos con sudo a /root/.zshrc
+    sudo cp "$origen_zshrc_root" /root/.zshrc
+    if [ $? -ne 0 ]; then
+        echo "ERROR: No se pudo copiar $origen_zshrc_root → /root/.zshrc."
+        exit 1
+    fi
+
+    # Ajustamos propiedad y permisos
+    sudo chown root:root /root/.zshrc
+    sudo chmod 644 /root/.zshrc
+
+    echo "✔ El archivo /root/.zshrc ha sido copiado y ajustado con permisos (owner: root:root, chmod 644)."
+else
+    echo "WARN: No se encontró $origen_zshrc_root. Se omite la copia de /.zshrc para root."
+fi
+
+echo ""
+
+
+# ────────────────────────────────────────────────────────────────────
+#  Crear un enlace simbólico para que root use el .zshrc del usuario
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Configurando root para que use el .zshrc del usuario normal"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# Si no habías definido user_home, podrías hacerlo aquí:
+# user_home="$HOME"
+
+# 1) Nos aseguramos de que exista el .zshrc del usuario
+if [ -f "$HOME/.zshrc" ]; then
+    # 2) Creamos (o reemplazamos) el enlace simbólico /root/.zshrc → $user_home/.zshrc
+    sudo ln -sf "$HOME/.zshrc" /root/.zshrc
+    if [ $? -ne 0 ]; then
+        echo "ERROR: No se pudo crear el enlace simbólico /root/.zshrc → $user_home/.zshrc. Abortando."
+        exit 1
+    fi
+    echo "✔ Enlace simbólico creado: /root/.zshrc → $HOME/.zshrc"
+else
+    echo "WARN: No se encontró $HOME/.zshrc. Se omite enlace para root."
+fi
+
+echo ""
+
+
+# Cambiar el shell de root a zsh
+sudo usermod --shell /usr/bin/zsh root
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo cambiar el shell de root a /usr/bin/zsh."
+    exit 1
+fi
+echo "✔ Shell de root cambiado a /usr/bin/zsh."
+
+
+# ────────────────────────────────────────────────────────────────────
+#  Copiar carpeta bin → $HOME/.config/bin
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Copiando carpeta bin → \$HOME/.config/bin"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# 1) Crear $HOME/.config/bin si no existe
+mkdir -p "$HOME/.config/bin"
+
+# 2) Copiar recursivamente todo el contenido de bin/
+cp -r "$REPO_ROOT/bin/." "$HOME/.config/bin/"
+
+# 3) Verificar errores
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo copiar $REPO_ROOT/bin → $HOME/.config/bin"
+    exit 1
+fi
+
+echo "✔ Carpeta bin copiada correctamente en \$HOME/.config/bin"
+echo ""
+
+
+# ────────────────────────────────────────────────────────────────────
+#  Instalar repositorio BlackArch (strap.sh)
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo "  Descargando e instalando BlackArch (strap.sh)..."
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# 1) Descargar el instalador strap.sh
+curl -O https://blackarch.org/strap.sh
+if [ $? -ne 0 ]; then
+    echo "ERROR: Falló la descarga de https://blackarch.org/strap.sh"
+    exit 1
+fi
+
+# 2) Hacer el script ejecutable
+chmod +x strap.sh
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo cambiar atributos para strap.sh"
+    exit 1
+fi
+
+# 3) Ejecutar strap.sh como root (añade el repo BlackArch a pacman)
+sudo ./strap.sh
+if [ $? -ne 0 ]; then
+    echo "ERROR: Falló la ejecución de strap.sh"
+    exit 1
+fi
+
+echo "✔ BlackArch agregado correctamente a pacman.conf y llave importada."
+echo ""
+
+
 final_prompt
