@@ -589,6 +589,36 @@ backup_existing_config
 install_dotfiles
 configure_services
 change_default_shell
+
+# ────────────────────────────────────────────────────────────────────
+#  Clonar nuevamente tu repositorio en $HOME/dotfilesBaltha
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Clonando repositorio dotfilesBaltha en \$HOME/dotfilesBaltha"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+# Si ya existe ~/dotfilesBaltha lo renombramos con timestamp
+if [ -d "$HOME/dotfilesBaltha" ]; then
+    backup_dir="$HOME/dotfilesBaltha_$(date +%Y%m%d-%H%M%S)"
+    echo "Repositorio existente encontrado, moviendo a: $backup_dir"
+    mv "$HOME/dotfilesBaltha" "$backup_dir"
+fi
+
+# Clonar repositorio de nuevo
+git clone --depth=1 https://github.com/Balthael/dotfilesBaltha "$HOME/dotfilesBaltha"
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo clonar https://github.com/Balthael/dotfilesBaltha en \$HOME/dotfilesBaltha"
+    exit 1
+fi
+
+echo "✔ dotfilesBaltha clonado en \$HOME/dotfilesBaltha"
+echo ""
+
+
+
 # ────────────────────────────────────────────────────────────────────
 # Copiamos toda la carpeta “tools” a $HOME/tools (creándola si no existe)
 # ────────────────────────────────────────────────────────────────────
@@ -600,7 +630,7 @@ echo "────────────────────────�
 sleep 1
 
 # Nos aseguramos de estar en la raíz del repositorio (donde existe la carpeta “tools”)
-REPO_ROOT="$HOME/dotfiles"
+REPO_ROOT="$HOME/dotfilesBaltha"
 
 # 1) Creamos ~/tools si no existe
 mkdir -p "$HOME/tools"
@@ -660,27 +690,27 @@ echo "────────────────────────�
 sleep 1
 
 # 3) Copiar .p10k.zsh a $HOME
-if [ -f "$HOME/dotfiles/home/.p10k.zsh" ]; then
-    cp "$HOME/dotfiles/home/.p10k.zsh" "$HOME/.p10k.zsh"
+if [ -f "$HOME/dotfilesBaltha/home/.p10k.zsh" ]; then
+    cp "$HOME/dotfilesBaltha/home/.p10k.zsh" "$HOME/.p10k.zsh"
     if [ $? -ne 0 ]; then
-        echo "ERROR: No se pudo copiar \$HOME/dotfiles/home/.p10k.zsh → \$HOME/.p10k.zsh"
+        echo "ERROR: No se pudo copiar \$HOME/dotfilesBaltha/home/.p10k.zsh → \$HOME/.p10k.zsh"
         exit 1
     fi
     echo "✔ Archivo .p10k.zsh instalado en \$HOME/.p10k.zsh"
 else
-    echo "WARN: No se encontró \$HOME/dotfiles/home/.p10k.zsh (se omitió copia a \$HOME)"
+    echo "WARN: No se encontró \$HOME/dotfilesBaltha/home/.p10k.zsh (se omitió copia a \$HOME)"
 fi
 
 # 4) Copiar .p10k.zsh a /root (usando sudo)
-if [ -f "$HOME/dotfiles/home/.p10k.zsh" ]; then
+if [ -f "$HOME/dotfilesBaltha/home/.p10k.zsh" ]; then
     sudo cp "$HOME/dotfiles/home/.p10k.zsh" /root/.p10k.zsh
     if [ $? -ne 0 ]; then
-        echo "ERROR: No se pudo copiar \$HOME/dotfiles/home/.p10k.zsh → /root/.p10k.zsh"
+        echo "ERROR: No se pudo copiar \$HOME/dotfilesBaltha/home/.p10k.zsh → /root/.p10k.zsh"
         exit 1
     fi
     echo "✔ Archivo .p10k.zsh instalado en /root/.p10k.zsh"
 else
-    echo "WARN: No se encontró \$HOME/dotfiles/home/.p10k.zsh (se omitió copia a /root)"
+    echo "WARN: No se encontró \$HOME/dotfilesBaltha/home/.p10k.zsh (se omitió copia a /root)"
 fi
 
 echo ""
@@ -697,7 +727,7 @@ echo "────────────────────────�
 sleep 1
 
 
-origen_zshrc_root="$HOME/dotfiles/home/.zshrc"
+origen_zshrc_root="$HOME/dotfilesBaltha/home/.zshrc"
 
 # Verificamos que exista el archivo en la ruta de origen
 if [ -f "$origen_zshrc_root" ]; then
@@ -781,6 +811,42 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "✔ Carpeta bin copiada correctamente en \$HOME/.config/bin"
+echo ""
+
+
+# ────────────────────────────────────────────────────────────────────
+#  Instalar zsh-sudo-plugin en /usr/share/zsh/plugins
+# ────────────────────────────────────────────────────────────────────
+
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo " Instalando zsh-sudo-plugin en /usr/share/zsh/plugins"
+echo "────────────────────────────────────────────────────────"
+sleep 1
+
+PLUGIN_DIR="/usr/share/zsh/plugins/zsh-sudo-plugin"
+PLUGIN_SOURCE="$HOME/dotfilesBaltha/config/zsh/sudo.plugin.zsh"
+
+# 1. Crear carpeta del plugin si no existe
+sudo mkdir -p "$PLUGIN_DIR"
+if [ $? -ne 0 ]; then
+    echo "ERROR: No se pudo crear $PLUGIN_DIR"
+    exit 1
+fi
+
+# 2. Copiar el archivo sudo.plugin.zsh
+if [ -f "$PLUGIN_SOURCE" ]; then
+    sudo cp "$PLUGIN_SOURCE" "$PLUGIN_DIR/sudo.plugin.zsh"
+    if [ $? -ne 0 ]; then
+        echo "ERROR: No se pudo copiar $PLUGIN_SOURCE → $PLUGIN_DIR/sudo.plugin.zsh"
+        exit 1
+    fi
+    echo "✔ sudo.plugin.zsh copiado a $PLUGIN_DIR"
+else
+    echo "ERROR: No se encontró el archivo $PLUGIN_SOURCE"
+    exit 1
+fi
+
 echo ""
 
 
