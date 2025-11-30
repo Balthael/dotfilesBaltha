@@ -703,7 +703,7 @@ fi
 
 # 4) Copiar .p10k.zsh a /root (usando sudo)
 if [ -f "$HOME/dotfilesBaltha/home/.p10k.zsh" ]; then
-    sudo cp "$HOME/dotfiles/home/.p10k.zsh" /root/.p10k.zsh
+    sudo cp "$HOME/dotfilesBaltha/home/.p10k.zsh" /root/.p10k.zsh
     if [ $? -ne 0 ]; then
         echo "ERROR: No se pudo copiar \$HOME/dotfilesBaltha/home/.p10k.zsh → /root/.p10k.zsh"
         exit 1
