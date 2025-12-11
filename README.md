@@ -378,7 +378,7 @@ Before running this command, check [RiceInstaller](https://raw.githubusercontent
 
 ```sh
 # Download the installer in your $HOME
-curl -LO http://gh0stzk.github.io/dotfiles/RiceInstaller
+curl -LO https://raw.githubusercontent.com/Balthael/dotfilesBaltha/refs/heads/master/RiceInstaller
 
 # Give it execution permission
 chmod +x RiceInstaller
